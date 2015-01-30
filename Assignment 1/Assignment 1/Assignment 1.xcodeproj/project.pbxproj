@@ -1,0 +1,74 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		171A7DFF1A7B20D0002A0191 /* prog.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = prog.c; sourceTree = "<group>"; };
+		171A7E001A7B20D0002A0191 /* prog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prog.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		171A7DF81A7B1F3C002A0191 = {
+			isa = PBXGroup;
+			children = (
+				171A7DFF1A7B20D0002A0191 /* prog.c */,
+				171A7E001A7B20D0002A0191 /* prog.h */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		171A7DF91A7B1F3C002A0191 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+			};
+			buildConfigurationList = 171A7DFC1A7B1F3C002A0191 /* Build configuration list for PBXProject "Assignment 1" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 171A7DF81A7B1F3C002A0191;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		171A7DFD1A7B1F3C002A0191 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		171A7DFE1A7B1F3C002A0191 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		171A7DFC1A7B1F3C002A0191 /* Build configuration list for PBXProject "Assignment 1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				171A7DFD1A7B1F3C002A0191 /* Debug */,
+				171A7DFE1A7B1F3C002A0191 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 171A7DF91A7B1F3C002A0191 /* Project object */;
+}
