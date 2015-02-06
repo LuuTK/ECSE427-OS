@@ -24,7 +24,7 @@ int setup(char inputBuffer[], char *args[],int *background)
     
     /* read what the user enters on the command line */
     length = read(STDIN_FILENO, inputBuffer, MAX_LINE); //length of the input + 1
-
+    
     start = -1;
     if (length == 0)
         exit(0); /* ^d was entered, end of user command stream */
@@ -63,7 +63,7 @@ int setup(char inputBuffer[], char *args[],int *background)
     }
     args[ct] = NULL; /* just in case the input line was > 80 */
     return (ct+1);
-                }
+}
 
 
 /* the steps are:
@@ -78,7 +78,7 @@ void enterCommand(char *args[], int background, int numberArgs){
     
     int argsArraySize;
     
-
+    
     
     if(pid == 0){
         //in child
@@ -100,13 +100,13 @@ void enterCommand(char *args[], int background, int numberArgs){
         //printf("inside?");
         //
         printf("======================OUT CHILD==============\n");
-
+        
     }
     else{
         //waitpid(pid, &status, WNOHANG);
         wait(&status);
     }
-
+    
 }
 
 void printHistory(char *history[]){
@@ -126,7 +126,7 @@ void addToHistory(char *history[], char *cmd, int historyLength){
     
     //if did not reach 35 yet
     if(historyLength < MAX_HISTORY_ENTRIES + 1){
-            //printf("historyLength = %d\n ", historyLength);
+        //printf("historyLength = %d\n ", historyLength);
         history[historyLength-1] = strdup(cmd);
         
     }
@@ -143,7 +143,7 @@ void addToHistory(char *history[], char *cmd, int historyLength){
     }
     //printHistory(history);
     //printf("==================  END addToHistory ====================== \n");
-
+    
     
 }
 
@@ -194,109 +194,149 @@ char *builtInCommands(char *cmd){
         builtCommand = "exitCmd";
     }else if(strcmp(cmd, "history")==0){
         builtCommand = "historyCmd";
-    }else{
+    }
+    //else if(strcmp(cmd,"r") ==0 || strcmp(cmd,"r\n") == 0){
+    //    builtCommand = "rCmd";
+    //}
+    else{
         builtCommand = "false";
     }
     return builtCommand;
 }
 
 int main(void)
-                {
-                char inputBuffer[MAX_LINE]; /* buffer to hold the command entered */
-                int background; /* equals 1 if a command is followed by '&' */
-                char *args[MAX_LINE/+1]; /* command line (of 80) has max of 40 arguments */
-                    char *history[10];
-                    //int numberOfCmd = 0;
-                    char cmd[MAX_LINE]; //
-                    char *buildCmdTest;
-                    int historyLength = 0;
-                    
-                    //HISTORY
-                //    if(strcmp(args[0], HISTORY) == 0){
-                //        printf("you selected history\n");
-                //    }
-                    
-                    
-                    
-                while (1){ /* Program terminates normally inside setup */
-                    background = 0;
-                    printf(" COMMAND->\n");
-                   int numberArgs = setup(inputBuffer,args,&background); /* get next command, returns the index of next element*/
-                    //printf("index of next argument = %d \n ",numberArgs);
-                    
-                    //if user enters nothing, then reprompt him
-                    if(numberArgs == -1){
-                        continue;
-                    }
+{
+    char inputBuffer[MAX_LINE]; /* buffer to hold the command entered */
+    int background; /* equals 1 if a command is followed by '&' */
+    char *args[MAX_LINE/+1]; /* command line (of 80) has max of 40 arguments */
+    char *history[10];
+    //int numberOfCmd = 0;
+    char cmd[MAX_LINE]; //
+    char *buildCmdTest;
+    int historyLength = 0;
+    
+    //HISTORY
+    //    if(strcmp(args[0], HISTORY) == 0){
+    //        printf("you selected history\n");
+    //    }
+    
+    
+    
+    while (1){ /* Program terminates normally inside setup */
+        background = 0;
+        printf(" COMMAND->\n");
+        int numberArgs = setup(inputBuffer,args,&background); /* get next command, returns the index of next element*/
+        //printf("index of next argument = %d \n ",numberArgs);
+        
+        //if user enters nothing, then reprompt him
+        if(numberArgs == -1){
+            continue;
+        }
+        
+        
+        // HERE
+        if(args[0] != 0){
+            buildCmdTest = buildCmd(cmd, args, numberArgs, background);
+            //printf("print return of build cmd test = %s \n", buildCmdTest);
+            historyLength++;
+            addToHistory(history, buildCmdTest, historyLength);
+            
+        }else{
+            continue;
+        }
+        
+        // ERROR!!!
 
-                    
-                // HERE
-                    if(args[0] != 0){
-                        buildCmdTest = buildCmd(cmd, args, numberArgs, background);
-                        //printf("print return of build cmd test = %s \n", buildCmdTest);
-                        historyLength++;
-                        addToHistory(history, buildCmdTest, historyLength);
-                        
-
-                    }else{
-                        continue;
-                    }
-                    
-                    
-                    /* the steps are:
-                     (1) fork a child process using fork()
-                     (2) the child process will invoke execvp()
-                     (3) if background == 0, the parent will wait,
-                     otherwise returns to the setup() function. */
-                    
-                    //printf("is system call? %d \n",strcmp(builtInCommands(args[0]),"false"));
-                    
-
-                    
-                    // Step : if the user inputs a built-in command such as history, exit, cd, pwd
-                    if(strcmp(builtInCommands(args[0]),"false") != 0){
-                        if(strcmp(builtInCommands(args[0]), "cdCmd") == 0){
-                            chdir(args[1]);
-                        }else  if(strcmp(builtInCommands(args[0]), "exitCmd") == 0){
-                            exit(0);
-                        } if(strcmp(builtInCommands(args[0]), "historyCmd") == 0){
-                            printHistory(history);
-                        } if(strcmp(builtInCommands(args[0]), "pwdCmd") == 0){
-                            char cwd[1024];
-                            if(getcwd(cwd, sizeof(cwd)) != NULL){
-                                    fprintf(stdout, "presend working directory : %s\n", cwd);
-                            }else{
-                                printf("error in pwd");
-                            }
-                            
-                        }
-                    }else{
-                        enterCommand(args, numberArgs, background);
-                    }
-                    
-                    
-                    
-                    
-                    //char *test[10];
-                    //char *command = args[0];
-                    
-                    //char *string2 = "hello";
-                    //char *string = strdup(string2);
-                    //printf("%s",strdup(string2));
-                    //printf("arg 0 is\n");
-                    //printf("%s", *args);
-                    /*
-                    if(strcmp(args[0], HISTORY)==0){
-                        printf("success");
-                        
-                    }
-                    */
-                    //buildCmd(*cmd, *args, numberOfCmd, background);
-                    //addToHistory(history, *args, numberOfCmd);
-                    
-
-            }
+        
+        /* the steps are:
+         (1) fork a child process using fork()
+         (2) the child process will invoke execvp()
+         (3) if background == 0, the parent will wait,
+         otherwise returns to the setup() function. */
+        
+        //printf("is system call? %d \n",strcmp(builtInCommands(args[0]),"false"));
+        
+        
+        
+        
+        
+        
+        
+        
+        // Step : if the user inputs a built-in command such as history, exit, cd, pwd
+        if(strcmp(builtInCommands(args[0]),"false") != 0){
+            if(strcmp(builtInCommands(args[0]), "cdCmd") == 0){
+                chdir(args[1]);
+            }else  if(strcmp(builtInCommands(args[0]), "exitCmd") == 0){
+                exit(0);
+            } else if(strcmp(builtInCommands(args[0]), "historyCmd") == 0){
+                printHistory(history);
+            } else if(strcmp(builtInCommands(args[0]), "pwdCmd") == 0){
+                char cwd[1024];
+                if(getcwd(cwd, sizeof(cwd)) != NULL){
+                    fprintf(stdout, "presend working directory : %s\n", cwd);
+                }else {
+                    printf("error in pwd");
                 }
+                
+            }else{
+                enterCommand(args, numberArgs, background);
+                }
+            
+        }
+        
+        /*
+        if(strcmp(builtInCommands(args[0]),"rCmd") == 0){
+            if(args[1] != 0){
+                printf("inside r?");
+                //printf("history feature, no 2nd argument\n");
+                //printf("most recent command = %s\n", history[0]);
+                strcpy(cmd, history[0]);
+                printf("%sls\n", cmd);
+                
+                
+                historyLength++;
+                addToHistory(history, cmd, historyLength);
+                
+                char recentTemp[MAX_LINE + 1];
+                strcpy(recentTemp, cmd);
+                strcat(recentTemp, "\n");
+                
+                //strcpy(recentTemp, "ls\n");
+                numberArgs = setup(recentTemp,args,&background);
+                //execvp(history[0], history);
+                //enterCommand(history, numberArgs, background);
+                //execvp("ls", args);
+                printHistory(history);
+            }
+            
+        }
+        */
+        
+        //Step : R x for history feature
+        
+        
+        
+        //char *test[10];
+        //char *command = args[0];
+        
+        //char *string2 = "hello";
+        //char *string = strdup(string2);
+        //printf("%s",strdup(string2));
+        //printf("arg 0 is\n");
+        //printf("%s", *args);
+        /*
+         if(strcmp(args[0], HISTORY)==0){
+         printf("success");
+         
+         }
+         */
+        //buildCmd(*cmd, *args, numberOfCmd, background);
+        //addToHistory(history, *args, numberOfCmd);
+        
+        
+    }
+}
 
 //gcc /Users/Tuan/Desktop/McGill/ECSE\ 427/ECSE427-OS/Assignment\ 1/Assignment\ 1/prog.c
 ///Users/Tuan/a.out ;
