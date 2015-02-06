@@ -246,8 +246,7 @@ int main(void)
             if(args[1] != 0 && strcmp(args[0],"r") == 0){
                 searchHistory(args[1], history, historyLength - 1);
             }else{
-                if(strcmp(args[0],"r") == 0){ //if we only have r
-                    if(args[1] != 0){
+                printf("PREVIOUS COMMAND = %s\n", history[historyLength - 2]); // will print the most recent command, couldn't implement it to run it
                         strcpy(cmd, history[0]);
                         
                         historyLength++;
@@ -258,9 +257,6 @@ int main(void)
                         strcat(recentTemp, "\n");
                         numberArgs = setup(recentTemp,args,&background);
                         printHistory(history);
-                    }
-                }
-                
                 
                 
             }
