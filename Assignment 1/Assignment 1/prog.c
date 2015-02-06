@@ -66,11 +66,14 @@ int setup(char inputBuffer[], char *args[],int *background)
 }
 
 
-/* the steps are:
+/* 
+ 
+ the steps are:
  (1) fork a child process using fork()
  (2) the child process will invoke execvp()
  (3) if background == 0, the parent will wait,
- otherwise returns to the setup() function. */
+ otherwise returns to the setup() function. 
+ */
 void enterCommand(char *args[], int background, int numberArgs){
     int status;
     //start
@@ -81,10 +84,6 @@ void enterCommand(char *args[], int background, int numberArgs){
     
     
     if(pid == 0){
-        //in child
-        printf("===================IN CHILD====================\n");
-        //printf("args[0] = %s\n", args[0]);
-        //printf("args[1] = %s\n", args[1]);
         
         char *options[numberArgs];
         int j = 0;
@@ -93,21 +92,20 @@ void enterCommand(char *args[], int background, int numberArgs){
             j++;
         }
         options[argsArraySize-1] = 0;
-        //printf("args[0] = %s\n", args[0]);
-        //printf("options = %s\n", options[1]);
         execvp(args[0],args);
-        
-        //printf("inside?");
-        //
-        printf("======================OUT CHILD==============\n");
         
     }
     else{
-        //waitpid(pid, &status, WNOHANG);
         wait(&status);
     }
     
 }
+
+/*
+ 
+ This function will simply print the history
+ 
+ */
 
 void printHistory(char *history[]){
     int i;
@@ -119,14 +117,17 @@ void printHistory(char *history[]){
     
 }
 
+/*
+ 
+ This function will add the command in a custom built history
+ 
+ */
 void addToHistory(char *history[], char *cmd, int historyLength){
-    //printf("==================  START addToHistory ====================== \n");
     int MaximumEntries = MAX_HISTORY_ENTRIES;
     int j;
     
     //if did not reach 35 yet
     if(historyLength < MAX_HISTORY_ENTRIES + 1){
-        //printf("historyLength = %d\n ", historyLength);
         history[historyLength-1] = strdup(cmd);
         
     }
@@ -141,25 +142,21 @@ void addToHistory(char *history[], char *cmd, int historyLength){
         history[0] = strdup(cmd);
         
     }
-    //printHistory(history);
-    //printf("==================  END addToHistory ====================== \n");
-    
-    
 }
 
-
+/*
+ 
+ this function will build the command seperating arguments with a space
+ 
+ */
 char * buildCmd(char cmd[], char *args[], int numberOfCmd, int background){
     
-    strcpy(cmd,"");
+    strcpy(cmd,""); //set to blank
     
     int i = 0;
-    //printf("==================  START buildCmd ====================== \n");
-    //printf("%d \n", numberOfCmd);
-    //printf("args[0] in buildCmd = %s \n", args[0]);
     //concatenate the arguments
     for(i = 0; i < numberOfCmd; i++){
         if(args[i] != 0){
-            //printf("args[%d] is = %s \n", i, args[i]);
             strcat(cmd, args[i]);
             strcat(cmd, " ");
         }
@@ -167,20 +164,18 @@ char * buildCmd(char cmd[], char *args[], int numberOfCmd, int background){
     
     //if a command is run in the background, it will end with & as mentionned in instructions
     if(background == 0){
-        //printf("background is == 0 \n");
         cmd[strlen(cmd) - 1] = '&';
     }
-    
-    //printf("%s", cmd);
-    //printf("buildCmd returns cmd =  %s\n", cmd);
-    //printf("==================  END buildCmd ====================== \n");
+
     return cmd;
     
     
 }
 
-//If the input is a built-in command, return the "command"
-//else return false "false"
+/*
+If the input is a built-in command, return the "command" (pwd, cd, exit, history)
+else return false "false"
+ */
 char *builtInCommands(char *cmd){
     
     char *builtCommand;
@@ -194,14 +189,36 @@ char *builtInCommands(char *cmd){
         builtCommand = "exitCmd";
     }else if(strcmp(cmd, "history")==0){
         builtCommand = "historyCmd";
-    }
-    //else if(strcmp(cmd,"r") ==0 || strcmp(cmd,"r\n") == 0){
-    //    builtCommand = "rCmd";
-    //}
-    else{
+    }else if(strcmp(cmd,"r") == 0){
+        builtCommand = "rCmd";
+    }else{
         builtCommand = "false";
     }
     return builtCommand;
+}
+
+
+
+/*
+ This function searches in the history and finds the command that has the
+ same first character as the user input
+ 
+ */
+char *searchHistory(char *args, char *history[], int index){
+    int i;
+    
+    //printf("in search history\n");
+    for(i = index; i >= 0; i--){
+        char *x = malloc(strlen(history[i] + 1));
+        strcpy(x, history[i]);
+        //printf("history :%c vs args : %s\n",x[0], args);
+        if(((args = &x[0]))){
+            //printf("TRUE\n");
+            //printf("%s \n", history[i - 1   ]);
+            return history[i];
+        }
+    }
+    return "cmd not found";
 }
 
 int main(void)
@@ -241,52 +258,20 @@ int main(void)
             historyLength++;
             addToHistory(history, buildCmdTest, historyLength);
             
+            
         }else{
             continue;
         }
         
-        // ERROR!!!
+        if(args[1] != 0 && strcmp(args[0],"r") == 0){
+            searchHistory(args[1], history, historyLength - 1);
 
-        
-        /* the steps are:
-         (1) fork a child process using fork()
-         (2) the child process will invoke execvp()
-         (3) if background == 0, the parent will wait,
-         otherwise returns to the setup() function. */
-        
-        //printf("is system call? %d \n",strcmp(builtInCommands(args[0]),"false"));
-        
-        
-        
-        
-        
-        
-        
-        
-        // Step : if the user inputs a built-in command such as history, exit, cd, pwd
-        if(strcmp(builtInCommands(args[0]),"false") != 0){
-            if(strcmp(builtInCommands(args[0]), "cdCmd") == 0){
-                chdir(args[1]);
-            }else  if(strcmp(builtInCommands(args[0]), "exitCmd") == 0){
-                exit(0);
-            } else if(strcmp(builtInCommands(args[0]), "historyCmd") == 0){
-                printHistory(history);
-            } else if(strcmp(builtInCommands(args[0]), "pwdCmd") == 0){
-                char cwd[1024];
-                if(getcwd(cwd, sizeof(cwd)) != NULL){
-                    fprintf(stdout, "presend working directory : %s\n", cwd);
-                }else {
-                    printf("error in pwd");
-                }
-                
-            }else{
-                enterCommand(args, numberArgs, background);
-                }
-            
         }
         
-        /*
-        if(strcmp(builtInCommands(args[0]),"rCmd") == 0){
+        
+        //if(strcmp(builtInCommands(args[0]),"rCmd") == 0){
+        if(strcmp(args[0],"r\n") == 0){ //if we only have r
+            printf("hi \n");
             if(args[1] != 0){
                 printf("inside r?");
                 //printf("history feature, no 2nd argument\n");
@@ -308,12 +293,46 @@ int main(void)
                 //enterCommand(history, numberArgs, background);
                 //execvp("ls", args);
                 printHistory(history);
+            }else{ //if we have r x
+                
             }
             
         }
-        */
         
-        //Step : R x for history feature
+        /* the steps are:
+         (1) fork a child process using fork()
+         (2) the child process will invoke execvp()
+         (3) if background == 0, the parent will wait,
+         otherwise returns to the setup() function. */
+        
+        //printf("is system call? %d \n",strcmp(builtInCommands(args[0]),"false"));
+        
+        
+        
+        // Step : if the user inputs a built-in command such as history, exit, cd, pwd
+        if(strcmp(builtInCommands(args[0]),"false") != 0){
+            
+            if(strcmp(builtInCommands(args[0]), "cdCmd") == 0){
+                chdir(args[1]);
+            }else  if(strcmp(builtInCommands(args[0]), "exitCmd") == 0){
+                exit(0);
+            }else if(strcmp(builtInCommands(args[0]), "historyCmd") == 0){
+                printHistory(history);
+            }else if(strcmp(builtInCommands(args[0]), "pwdCmd") == 0){
+                char cwd[1024];
+                if(getcwd(cwd, sizeof(cwd)) != NULL){
+                    fprintf(stdout, "present working directory : %s\n", cwd);
+                }else{
+                    printf("error in pwd");
+                }
+                
+            }
+            
+        }else{
+            enterCommand(args, numberArgs, background);
+        
+        }
+        
         
         
         
