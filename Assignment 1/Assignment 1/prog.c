@@ -269,13 +269,7 @@ int main(void)
         }
        
         
-        /* the steps are:
-         (1) fork a child process using fork()
-         (2) the child process will invoke execvp()
-         (3) if background == 0, the parent will wait,
-         otherwise returns to the setup() function. */
-        
-        // Step : if the user inputs a built-in command such as history, exit, cd, pwd
+        //if the user inputs a built-in command such as history, exit, cd, pwd
         if(strcmp(builtInCommands(args[0]),"false") != 0){
             
             if(strcmp(builtInCommands(args[0]), "cdCmd") == 0){
