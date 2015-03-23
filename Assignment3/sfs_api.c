@@ -32,7 +32,8 @@ int mksfs(int fresh){
 int sfs_fopen(char *name){
     int startAddr = 0;
     int nblocks = 10;
-    void *writeArray = 'c';
+    char test = 'c'
+    void *writeArray = &test;
     void *ptr;
     
     init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
