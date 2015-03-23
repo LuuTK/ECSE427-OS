@@ -31,25 +31,15 @@ int mksfs(int fresh){
     return 0; // -1 if failed
 }
 int sfs_fopen(char *name){
-    int i = 0;
-    int j = 0;
-    fp = fopen (FILENAME, "w+b");
-
-    if (fp == NULL)
-    {
-        printf("Could not create new disk file %s\n\n", filename);
-        return -1;
-    }
+    int startAddr = 0;
+    int nblocks = 10;
+    void *ptr;
     
-    /*Fills the file with 0's to its given size*/
-    for (i = 0; i < NUM_BLOCKS; i++)
-    {
-        for (j = 0; j < BLOCK_SIZE; j++)
-        {
-            fputc(0, fp);
-        }
-    }
+    init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
     
+    read_blocks(startAddr, nblocks, ptr);
+    
+    printf("%c", ptr);
     return 0;
 }
 int sfs_fclose(int fileID){
