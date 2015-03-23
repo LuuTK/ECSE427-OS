@@ -10,7 +10,7 @@
 main()
 {
     printf("Hello World\n");
-    mksfs(1);
+    mksfs(0);
 }
 
 
