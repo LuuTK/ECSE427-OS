@@ -9,12 +9,7 @@
 
 
 
-main()
-{
-    printf("Hello World\n");
-    //mksfs(1);
-    sfs_fopen(FILENAME);
-}
+
 
 
 int mksfs(int fresh){
@@ -32,29 +27,38 @@ int mksfs(int fresh){
 int sfs_fopen(char *name){
     int startAddr = 0;
     int nblocks = 1;
-    char test = 'd';
+
+/*
+    char *test;
+		test = (char *) malloc(15); 
+		strcpy(test,"tutorialspoint");
+
+		printf("%s\n", test); 
+*/
+		int i;
+		char *test = "Hello";
     char *writeArray;
     void *ptr;
 		char *data;
 		int readResult;
-		char *writeTo;
-		int i = 0;
+		char *output;
+		output = malloc(1024);
 
 
-		writeArray = &test;
     init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
-    write_blocks(startAddr, nblocks, writeArray);
+    write_blocks(startAddr, nblocks, test);
 
-		//printf("%p\n", writeArray);
+   	read_blocks(startAddr, nblocks, output);
 
-    readResult = read_blocks(startAddr, nblocks,(void *) writeTo);
-		//read_blocks(startAddr, nblocks, writeTo);
     
-		for(i = 0; i<3;i++){
-			printf("writeTo = %c\n", (writeTo)[i]);	
+		for(i = 0; i<10;i++){
+			printf("output = %s\n", ((char *)output));	
 
 		}
-    printf("readResult = %d\n", readResult);
+
+		//free(test);
+		//free(writeTo);
+		//free(writeArray);
     return 0;
 }
 int sfs_fclose(int fileID){
@@ -80,3 +84,11 @@ int sfs_GetFileSize(const char* path){
     return 0;
 }
 
+
+int main()
+{
+    printf("Hello World\n");
+    //mksfs(1);
+    sfs_fopen(FILENAME);
+		return 0;
+}
