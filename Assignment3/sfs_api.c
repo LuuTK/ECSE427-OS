@@ -14,7 +14,7 @@ main()
 {
     printf("Hello World\n");
     //mksfs(1);
-    sfs_fread(FILENAME, );
+    sfs_fopen(FILENAME);
 }
 
 
