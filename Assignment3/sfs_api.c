@@ -38,7 +38,7 @@ int sfs_fopen(char *name){
     
     read_blocks(startAddr, nblocks, ptr);
     
-    printf("%d", ptr);
+    printf("%p", ptr);
     return 0;
 }
 int sfs_fclose(int fileID){

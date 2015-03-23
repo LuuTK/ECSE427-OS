@@ -7,10 +7,13 @@
 #define BLOCK_SIZE 512 //block size of 512 bytes
 #define NUM_BLOCKS 100 // test, to be changed
 
+
+
 main()
 {
     printf("Hello World\n");
-    mksfs(0);
+    //mksfs(1);
+    sfs_fopen(FILENAME);
 }
 
 
@@ -23,9 +26,19 @@ int mksfs(int fresh){
         printf("failure");
     }
     
+    
     return 0; // -1 if failed
 }
 int sfs_fopen(char *name){
+    int startAddr = 0;
+    int nblocks = 10;
+    void *ptr;
+    
+    init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
+    
+    read_blocks(startAddr, nblocks, ptr[0]);
+    
+    printf("%p", ptr);
     return 0;
 }
 int sfs_fclose(int fileID){
@@ -35,6 +48,7 @@ int sfs_fwrite(int fileID, const char *buf, int length){
     return 0;
 }
 int sfs_fread(int fileID, char *buf, int length){
+
     return 0;
 }
 int sfs_fseek(int fileID, int offset){
