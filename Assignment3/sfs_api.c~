@@ -31,14 +31,30 @@ int mksfs(int fresh){
 }
 int sfs_fopen(char *name){
     int startAddr = 0;
-    int nblocks = 10;
+    int nblocks = 1;
+    char test = 'd';
+    char *writeArray;
     void *ptr;
-    
+		char *data;
+		int readResult;
+		char *writeTo;
+		int i = 0;
+
+
+		writeArray = &test;
     init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
+    write_blocks(startAddr, nblocks, writeArray);
+
+		//printf("%p\n", writeArray);
+
+    readResult = read_blocks(startAddr, nblocks,(void *) writeTo);
+		//read_blocks(startAddr, nblocks, writeTo);
     
-    read_blocks(startAddr, nblocks, ptr[0]);
-    
-    printf("%p", ptr);
+		for(i = 0; i<3;i++){
+			printf("writeTo = %c\n", (writeTo)[i]);	
+
+		}
+    printf("readResult = %d\n", readResult);
     return 0;
 }
 int sfs_fclose(int fileID){

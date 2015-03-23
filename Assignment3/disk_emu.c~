@@ -111,7 +111,7 @@ int read_blocks(int start_address, int nblocks, void *buffer)
 
     /*Goto the data requested from the disk*/
     fseek(fp, start_address * BLOCK_SIZE, SEEK_SET);
-
+	printf("here 1\n");
     /*For every block requested*/
     for (i = 0; i < nblocks; ++i)
     {
@@ -126,9 +126,9 @@ int read_blocks(int start_address, int nblocks, void *buffer)
             memcpy(buffer+(i*BLOCK_SIZE), blockRead, BLOCK_SIZE);  
         }
     }
-
+		printf("here 2\n");
     free(blockRead);
-
+		printf("here 3\n");
 
     /*If no failure return the number of blocks read, else return the negative number of failures*/
     if (e == 0){
