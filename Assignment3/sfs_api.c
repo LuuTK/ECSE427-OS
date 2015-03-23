@@ -7,6 +7,8 @@
 #define BLOCK_SIZE 512 //block size of 512 bytes
 #define NUM_BLOCKS 100 // test, to be changed
 
+int unusedBlocks[1000];
+int mapDisk[1000][1000];
 
 struct super_Block
 {
@@ -27,14 +29,45 @@ struct i_node
     int pointers[13];
 }
 
+int printDiskMap(chat **array){
+    int i;
+    int j;
+    
+    for(i = 0; i < NUM_BLOCKS; i++){
+        printf("%s\n", array[i][0]);
+    }
+    
+    return 0;
+    
+}
 
 int mksfs(int fresh){
     int result;
+    int i,j;
+    char *output;
+    output = malloc(1000);
     
-    if(fresh){
+    if(fresh){ //if it does not exist, create one fresh
         init_fresh_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
-    }else{
-        printf("failure");
+        
+        
+        //keeps track of unused blocks
+        for(i = 0; i < NUM_BLOCKS; i++){
+            unusedBlocks[i] = 0;
+        }
+        
+        
+    }else{ //if it already exists
+        init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
+        
+        //reproduce a 2D array with the information on the disk
+        for(i = 0; i < NUM_BLOCKS; i++){
+                mapDisk[i][0] = read_blocks(0, i, output);
+        }
+        
+        printDiskMap(mapDisk);
+        
+        
     }
     
     
@@ -106,5 +139,6 @@ int main()
     printf("Hello World\n");
     //mksfs(1);
     sfs_fopen(FILENAME);
+    mksfs(1);
 		return 0;
 }
