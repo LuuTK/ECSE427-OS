@@ -32,6 +32,7 @@ int mksfs(int fresh){
 }
 int sfs_fopen(char *name){
     int i = 0;
+    int j = 0;
     fp = fopen (FILENAME, "w+b");
 
     if (fp == NULL)
