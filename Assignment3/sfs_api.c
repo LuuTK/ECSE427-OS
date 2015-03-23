@@ -8,8 +8,24 @@
 #define NUM_BLOCKS 100 // test, to be changed
 
 
+struct super_Block
+{
+    char magic[10];
+    int blockSize;
+    float FileSystemSize;
+    int iNodeTableLength;
+    int rootDirectoryNumber;
+}superBlock = { "0xAABB0005",BLOCK_SIZE,NUM_BLOCKS, NUM_BLOCKS,0};
 
-
+struct i_node
+{
+    char mode[100];
+    int linkCount;
+    int uid;
+    int gid;
+    int size;
+    int pointers[13];
+}
 
 
 int mksfs(int fresh){
@@ -37,12 +53,12 @@ int sfs_fopen(char *name){
 */
 		int i;
 		char *test = "Hello";
-    char *writeArray;
-    void *ptr;
+        char *writeArray;
+        void *ptr;
 		char *data;
 		int readResult;
 		char *output;
-		output = malloc(1024);
+		output = malloc(4000);
 
 
     init_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
