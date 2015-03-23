@@ -7,10 +7,14 @@
 #define BLOCK_SIZE 512 //block size of 512 bytes
 #define NUM_BLOCKS 100 // test, to be changed
 
+FILE* fp = NULL;
+
+
 main()
 {
     printf("Hello World\n");
-    mksfs(1);
+    //mksfs(1);
+    sfs_fread(FILENAME, );
 }
 
 
@@ -23,9 +27,28 @@ int mksfs(int fresh){
         printf("failure");
     }
     
+    
     return 0; // -1 if failed
 }
 int sfs_fopen(char *name){
+    int i = 0;
+    fp = fopen (FILENAME, "w+b");
+
+    if (fp == NULL)
+    {
+        printf("Could not create new disk file %s\n\n", filename);
+        return -1;
+    }
+    
+    /*Fills the file with 0's to its given size*/
+    for (i = 0; i < NUM_BLOCKS; i++)
+    {
+        for (j = 0; j < BLOCK_SIZE; j++)
+        {
+            fputc(0, fp);
+        }
+    }
+    
     return 0;
 }
 int sfs_fclose(int fileID){
@@ -35,6 +58,7 @@ int sfs_fwrite(int fileID, const char *buf, int length){
     return 0;
 }
 int sfs_fread(int fileID, char *buf, int length){
+
     return 0;
 }
 int sfs_fseek(int fileID, int offset){
