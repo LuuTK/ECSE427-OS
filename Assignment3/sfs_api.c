@@ -1,8 +1,55 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <math.h>
+#include "sfs_api.h"
+#include "disk_emu.h"
+
+#define FILENAME "FILENAME" //filename
+#define BLOCK_SIZE 512 //block size of 512 bytes
+#define NUM_BLOCKS 100 // test, to be changed
 
 main()
 {
-    printf("Hello World");
+    printf("Hello World\n");
+    mksfs(0);
+}
+
+
+int mksfs(int fresh){
+    int result;
     
+    if(fresh){
+        result = init_fresh_disk(FILENAME, BLOCK_SIZE, NUM_BLOCKS);
+    }else{
+        printf("failure");
+    }
+    
+    return result; // -1 if failed
+}
+int sfs_fopen(char *name){
+    return 0;
+}
+int sfs_fclose(int fileID){
+    return 0;
+}
+int sfs_fwrite(int fileID, const char *buf, int length){
+    return 0;
+}
+int sfs_fread(int fileID, char *buf, int length){
+    return 0;
+}
+int sfs_fseek(int fileID, int offset){
+    return 0;
+}
+int sfs_remove(char *file){
+    return 0;
+}
+int sfs_get_next_filename(char* filename){
+    return 0;
+}
+int sfs_GetFileSize(const char* path){
+    return 0;
 }
 
