@@ -7,7 +7,6 @@
 #define BLOCK_SIZE 512 //block size of 512 bytes
 #define NUM_BLOCKS 100 // test, to be changed
 
-FILE* fp = NULL;
 
 
 main()
@@ -39,7 +38,7 @@ int sfs_fopen(char *name){
     
     read_blocks(startAddr, nblocks, ptr);
     
-    printf("%c", ptr);
+    printf("%d", ptr);
     return 0;
 }
 int sfs_fclose(int fileID){
