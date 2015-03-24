@@ -27,14 +27,14 @@ struct i_node
     int gid;
     int size;
     int pointers[13];
-}
+};
 
-int printDiskMap(chat **array){
+int printDiskMap(char array[1000][1000]){
     int i;
     int j;
     
     for(i = 0; i < NUM_BLOCKS; i++){
-        printf("%s\n", array[i][0]);
+        printf("%c\n", array[i][0]);
     }
     
     return 0;
