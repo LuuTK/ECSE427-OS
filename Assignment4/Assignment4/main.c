@@ -13,8 +13,8 @@
 int FIRST_FIT = 10;
 int BEST_FIT = 20;
 int currentPolicy = 10; //start with first fit as current policy
-extern char *my_malloc_error = "Malloc : Success"; // error condition
-int MAX_MEMORY = 128000;
+char *my_malloc_error = "Malloc : Success"; // error condition
+int MAX_MEMORY = 10240000; //128Kb
 
 struct block{
     //int isAllocated; //allocated = 1, free = 0
@@ -24,27 +24,28 @@ struct block{
     void *freeBlock; //points to the start of the free block
 }block;
 
+int BLOCK_SIZE = 8*sizeof(block);
 struct block *freeListHead;
 
-void *findFreeBlock(int size, struct block *freeListHead){ //finds the next free block of a given size
+void *findFreeBlock(int size){ //finds the next free block of a given size
     printf("freeListHead : nextBlock %td\n", freeListHead->nextBlock);
 
-    //printf("in findFreeBlock");
-    struct block *search;
-    search = freeListHead;
+
     
     if(freeListHead == NULL){
         return NULL; //there is no free list
     }
     
+    //printf("in findFreeBlock");
+    struct block *search = freeListHead;
+    
     //FIRST_FIT algorithm
     
-    if(currentPolicy == FIRST_FIT){
+    if(currentPolicy == FIRST_FIT){ /* works */
         
         printf("in FIRST_FIT policy\n");
-        printf("search->nextBlock %td\n", search->nextBlock);
         //while the next block is not the end
-        while(search->nextBlock != NULL){
+        while(search != NULL){
             printf("in while loop \n");
             if(search->length >= size){ //if the block has enough space, return it
                 
@@ -64,7 +65,7 @@ void *findFreeBlock(int size, struct block *freeListHead){ //finds the next free
     }else{ //BEST_FIT algorithm
         
         struct block *bestFitBlock = freeListHead;
-        bestFitBlock->length = 100*size; //initialize high temporary smallest for BEST_FIT
+        bestFitBlock->length = 10*size; //initialize high temporary smallest for BEST_FIT
 
         //loop through all the list
         if(search->nextBlock != NULL){
@@ -95,35 +96,42 @@ void *findFreeBlock(int size, struct block *freeListHead){ //finds the next free
  segment).
  */
 void *my_malloc(int size){
-    printf("===== Testing my_alloc() =====\n");
-    printf("sbrk(0) = %p \n", sbrk(0));
-    
+//    printf("===== Testing my_alloc() =====\n");
+//    printf("sbrk(0) = %p \n", sbrk(0));
+    int sizeInBit = 8*size;
     
     //initlializes initial heap
     if(freeListHead == NULL){
+        printf("freeListHead == NULL : Initializing freeListHead...\n");
         freeListHead = sbrk(0); //initialize the free list head
         brk(sbrk(0) + sizeof(block) + MAX_MEMORY); //set PB to location
 
         freeListHead->length = MAX_MEMORY; //128kb
         freeListHead->prevBlock = NULL;
         freeListHead->nextBlock = NULL;
-        freeListHead->freeBlock = (void *)freeListHead + 8*sizeof(block);
+        freeListHead->freeBlock = (void *)freeListHead + BLOCK_SIZE;
         
-        printf("freeListHead : starts at %p\n", freeListHead);
-        printf("freeListHead : freeBlock = %p\n", freeListHead->freeBlock);
+        /* works */
+        printf("freeListHead : Size of a block is = %lu\n", BLOCK_SIZE);
+        printf("freeListHead : starts at %td\n", freeListHead);
+        printf("freeListHead : freeBlock = %td\n", freeListHead->freeBlock); //tested : difference = 256
         printf("freeListHead : length is %d\n", freeListHead->length);
-        printf("freeListHead : Size of a block is = %lu\n", 8*sizeof(block));
-        printf("freeListHead : nextBlock is %d\n", freeListHead->nextBlock);
-        printf("freeListHead : prevBlock is %d\n", freeListHead->prevBlock);
 
 
         
     }
-    struct block *mallocFreeBlock = findFreeBlock(size, freeListHead); //returns pointer that has a free block
+    
+    struct block *mallocFreeBlock = findFreeBlock(sizeInBit + BLOCK_SIZE); //returns pointer that has a free block
+    
+    /* works */
+    printf("mallocFreeBlock : starts at %td\n", mallocFreeBlock);
+    printf("mallocFreeBlock : freeBlock = %td\n", mallocFreeBlock->freeBlock); //tested : difference = 256
+    printf("mallocFreeBlock : length is %d\n", mallocFreeBlock->length);
+    
     
     //if size is too large, therefore no free blocks big enough
     if(mallocFreeBlock == NULL){
-        my_malloc_error = "Malloc : ERROR (size too big)";
+        my_malloc_error = "Malloc : ERROR (size too big, could not find free space)";
         printf("%s\n", my_malloc_error);
         return NULL;
     }else{
@@ -138,43 +146,48 @@ void *my_malloc(int size){
         newFreeListHead->nextBlock = NULL;
         newFreeListHead->freeBlock = NULL;
         
+        
+        
         if(mallocFreeBlock == freeListHead){
-            freeListHead = freeListHead->freeBlock + size;
+            freeListHead = (freeListHead->freeBlock + sizeInBit);
             newFreeListHead = freeListHead;
         }else{
-            newFreeListHead = mallocFreeBlock->freeBlock + size;
+            newFreeListHead = mallocFreeBlock->freeBlock + sizeInBit;
         }
         
-        //newFreeListHead = freeListHead;
-        printf("malloc length = %d\n", mallocFreeBlock->length);
-//        //printf("newFreeListHead->length = %d\n", newFreeListHead->length);
-//        //initializes the updated freelisthead
-//        
-//        
-//
-//        newFreeListHead->length = mallocFreeBlock->length - sizeof(block) - size;
-//        newFreeListHead->prevBlock = mallocFreeBlock; //increments the free block with the size (size is now used)
-//        newFreeListHead->nextBlock = mallocFreeBlock->nextBlock;
-//        newFreeListHead->freeBlock = (void *)newFreeListHead + 8*sizeof(block);
-//        
-//        
-//        dataBlock->length = size;
-//        dataBlock->nextBlock = newFreeListHead;
-//        dataBlock->prevBlock = mallocFreeBlock;
-//        dataBlock->freeBlock = newFreeListHead->freeBlock;
-//        
-//        
+        printf("newFreeListHead1 : starts at %td\n", newFreeListHead);
+        //printf("newFreeListHead1 : freeBlock = %td\n", newFreeListHead->freeBlock);
+        printf("newFreeListHead1 : length is %d\n", newFreeListHead->length);
+
+        //initializes the updated freelisthead
+
+        newFreeListHead->length = mallocFreeBlock->length - sizeof(block) - size;
+        newFreeListHead->prevBlock = mallocFreeBlock; //increments the free block with the size (size is now used)
+        newFreeListHead->nextBlock = mallocFreeBlock->nextBlock;
+        newFreeListHead->freeBlock = (void *)newFreeListHead + BLOCK_SIZE;
         
-//        printf("newFreeListHead : = %p\n", newFreeListHead);
-//        printf("newFreeListHead : freeBlock = %p\n", newFreeListHead->freeBlock);
-//        printf("newFreeListHead : length = %d\n", newFreeListHead->length);
-//        printf("newFreeListHead : Size of a block is = %lu\n", 8*sizeof(block));
-//        
-//        printf("dataBlock : = %p\n", dataBlock);
-//        printf("dataBlock : freeBlock =  %p\n", dataBlock->freeBlock);
-//        printf("dataBlock : length = %d\n", dataBlock->length);
-//        printf("dataBlock : Size of a block is = %lu\n", 8*sizeof(block));
-//        
+        /* works */
+        printf("newFreeListHead2 : starts at %td\n", newFreeListHead);
+        printf("newFreeListHead2 : freeBlock = %td\n", newFreeListHead->freeBlock); //the difference is length - sizeInBits (10*8) - 256 (BLOCK_SIZE)
+        printf("newFreeListHead2 : length is %d\n", newFreeListHead->length);
+        
+        
+        dataBlock = mallocFreeBlock;
+        dataBlock->length = sizeInBit;
+        dataBlock->nextBlock = newFreeListHead;
+        
+        
+        
+        printf("newFreeListHead : = %p\n", newFreeListHead);
+        printf("newFreeListHead : freeBlock = %p\n", newFreeListHead->freeBlock);
+        printf("newFreeListHead : length = %d\n", newFreeListHead->length);
+        printf("newFreeListHead : Size of a block is = %lu\n", 8*sizeof(block));
+        
+        printf("dataBlock : = %p\n", dataBlock);
+        printf("dataBlock : freeBlock =  %p\n", dataBlock->freeBlock);
+        printf("dataBlock : length = %d\n", dataBlock->length);
+        printf("dataBlock : Size of a block is = %lu\n", 8*sizeof(block));
+//
         
 
     }
@@ -197,14 +210,16 @@ void my_mallopt(int policy){
 
 
 
-int main(int argc, const char * argv[]) {
+int main() {
     
     /* testing my_mallopt */
     printf("====== Testing my allopt ====== \n");
-    my_mallopt(20);
-    
-    my_malloc(10);
-    my_malloc(200);
+    //my_mallopt(20);
+    void* data1 = my_malloc(10);
+    void* data2 = my_malloc(100);
+
+    //my_malloc(10);
+    //my_malloc(200);
     
     printf("%s\n", my_malloc_error);
 
